@@ -28,4 +28,5 @@ html, body{
 }
 .plain-search-result{
     height: 60px;
+    border: 1px solid #e0e0e0;
 }

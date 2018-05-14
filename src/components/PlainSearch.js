@@ -8,6 +8,7 @@ class PlainSearch extends Component {
       searchValue: ''
     };
     this.searchInput = this.searchInput.bind(this);
+    this.clearSearch = this.clearSearch.bind(this);
   }
 
   componentWillMount(){
@@ -20,12 +21,18 @@ class PlainSearch extends Component {
     });
   }
 
+  clearSearch(){
+    this.setState({
+      searchValue: ''
+    });
+  }
+
   render() {
     const { fetchData } = this.props;
 
     return (
       <div className="plain-search-group">
-        <input type='text' onChange={this.searchInput} />
+        <input type='text' onChange={this.searchInput} onBlur={this.clearSearch}/>
         <div className="plain-search-result-group">
           {this.state.searchValue ? fetchData.map(element => {
             if(element.title.toLowerCase().search(this.state.searchValue.toLowerCase()) !== -1){
