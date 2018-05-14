@@ -12,6 +12,13 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "styles": "nodemon -e scss -x node-sass --include-path scss ./Styles/style.scss ./Styles/style.css"
+  },
+  "devDependencies": {
+    "lodash": "^4.17.10",
+    "node-sass": "^4.9.0",
+    "nodemon": "^1.17.4",
+    "scss": "^0.2.4"
   }
 }
