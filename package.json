@@ -16,6 +16,7 @@
     "styles": "nodemon -e scss -x node-sass --include-path scss ./Styles/style.scss ./Styles/style.css"
   },
   "devDependencies": {
+    "axios": "^0.18.0",
     "lodash": "^4.17.10",
     "node-sass": "^4.9.0",
     "nodemon": "^1.17.4",

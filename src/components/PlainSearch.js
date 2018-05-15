@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
 class PlainSearch extends Component {
-  
-  constructor(props){
+
+  constructor(props) {
     super();
     this.state = {
       searchValue: ''
@@ -11,17 +11,17 @@ class PlainSearch extends Component {
     this.clearSearch = this.clearSearch.bind(this);
   }
 
-  componentWillMount(){
+  componentWillMount() {
 
   }
 
-  searchInput(element){
+  searchInput(element) {
     this.setState({
       searchValue: element.target.value
     });
   }
 
-  clearSearch(){
+  clearSearch() {
     this.setState({
       searchValue: ''
     });
@@ -32,14 +32,17 @@ class PlainSearch extends Component {
 
     return (
       <div className="plain-search-group">
-        <input type='text' onChange={this.searchInput} onBlur={this.clearSearch}/>
+        <input type='text' onChange={this.searchInput} onBlur={this.clearSearch} />
         <div className="plain-search-result-group">
           {this.state.searchValue ? fetchData.map(element => {
-            if(element.title.toLowerCase().search(this.state.searchValue.toLowerCase()) !== -1){
-              return <div className="plain-search-result">{element.title}</div>
+            if (element.title.toLowerCase().search(this.state.searchValue.toLowerCase()) !== -1) {
+              return <div className="plain-search-result">
+                <div className="result-title">{element.title} <i className="fa fa-star"></i> {element.score}</div>
+                <div className="result-genre">Genre: {element.genre}</div>
+              </div>
             }
           }) : ''}
-          </div>  
+        </div>
       </div>
     );
   }
