@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { addListToRepo, getRepoDetail } from './actions';
@@ -31,9 +31,19 @@ class RepoComponent extends Component {
         let list_template = '';
         const { repoDetail } = this.props;
 
+        if (repoDetail.lists) {
+            list_template = repoDetail.lists.map((list, index) => {
+                return <li key={index}>{list}</li>
+            })
+        }
+
         return (
             <div>
+                <span>
+                    <Link to="/">Back to Home</Link>
+                </span>
                 <h2>{repoDetail.name}</h2>
+                <ul>{list_template}</ul>
                 <input type="text" onChange={(e) => this.setState({ createList: e.target.value })} />
                 <button onClick={this.addList}>Add To List</button>
             </div>

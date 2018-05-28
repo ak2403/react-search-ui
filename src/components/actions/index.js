@@ -37,7 +37,7 @@ export const addListToRepo = (data) => {
     return (dispatch) => {
         axios.post('/repo/addListToRepo', data).then(res => {
             dispatch({
-                type: 'getRepoDetail',
+                type: 'addedListToRepo',
                 payload: res.data
             })
         });

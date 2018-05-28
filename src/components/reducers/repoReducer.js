@@ -22,6 +22,11 @@ export default function RepoReducer(state = initialState, action) {
                 ...state,
                 repoDetail: action.payload.repoDetail
             };
+        case 'addedListToRepo':
+            return {
+                ...state,
+                repoDetail: action.payload.repoDetail
+            };
         default:
             return state;
     }
