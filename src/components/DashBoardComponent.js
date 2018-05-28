@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { addList } from './actions';
+import { addRepo, getRepo } from './actions';
+import RepoList from './RepoList';
+import RepoComponent from './RepoComponent';
 
 class Dashboard extends Component {
 
@@ -14,12 +17,12 @@ class Dashboard extends Component {
   }
 
   componentWillMount() {
-
+    
   }
 
   addListGroup() {
     const { inputValue } = this.state;
-    this.props.addList({
+    this.props.addRepo({
       name: inputValue
     });
   }
@@ -31,18 +34,28 @@ class Dashboard extends Component {
       <div>
         <input type="text" onChange={(e) => this.setState({ inputValue: e.target.value })} />
         <button onClick={this.addListGroup}>Add</button>
+        <BrowserRouter>
+          <Switch>
+            <Route exact path="/" component={RepoList} />
+            <Route path="/:id" component={RepoComponent} />
+            <Redirect to='/' />
+          </Switch>
+        </BrowserRouter>
       </div>
     );
   }
 }
 
 const mapStateToProps = (props) => {
-
+  return {
+    ...props
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
-    addList: addList
+    addRepo: addRepo,
+    getRepo: getRepo
   }, dispatch)
 }
 
