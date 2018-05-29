@@ -2,7 +2,7 @@
   "name": "react-search-ui",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://react-search-server.herokuapp.com/",
+  "proxy": "http://localhost:5000/",
   "dependencies": {
     "csvtojson": "^1.1.12",
     "react": "^16.3.2",
