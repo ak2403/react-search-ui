@@ -43,3 +43,14 @@ export const addListToRepo = (data) => {
         });
     }
 }
+
+export const changeRepoList = (data) => {
+    return (dispatch) => {
+        axios.post('/repo/changeRepoList', data).then(res => {
+            dispatch({
+                type: 'addedListToRepo',
+                payload: res.data
+            });
+        });
+    }
+}

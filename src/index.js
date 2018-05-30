@@ -6,7 +6,7 @@ import thunk from 'redux-thunk';
 import reducers from './components/reducers';
 import App from './App';
 import './Styles/font-awesome/css/font-awesome.min.css';
-import './style.css';
+import './Styles/style.css';
 
 const middleware = applyMiddleware(thunk);
 const store = createStore(reducers, middleware);

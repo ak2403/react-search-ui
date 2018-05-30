@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import _ from 'underscore';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { addListToRepo, getRepoDetail } from './actions';
+import { addListToRepo, getRepoDetail, changeRepoList } from './actions';
 
 class RepoComponent extends Component {
     constructor(props) {
@@ -11,6 +12,16 @@ class RepoComponent extends Component {
             createList: ''
         };
         this.addList = this.addList.bind(this);
+        this.checkboxChange = this.checkboxChange.bind(this);
+    }
+
+    checkboxChange(event, title) {
+        let { repoDetail } = this.props;
+        _.filter(repoDetail.lists, list => {
+            if (list.title == title)
+                list.checked = event.target.checked
+        });
+        this.props.changeRepoList(repoDetail);
     }
 
     addList() {
@@ -33,17 +44,17 @@ class RepoComponent extends Component {
 
         if (repoDetail.lists) {
             list_template = repoDetail.lists.map((list, index) => {
-                return <li key={index}>{list}</li>
+                return <li key={index}><input type="checkbox" checked={list.checked ? true : false} onChange={(event) => this.checkboxChange(event, list.title)} ref="check" />{list.title} <span style={{ float: 'right' }}>Edit Remove</span></li>
             })
         }
 
         return (
-            <div>
+            <div style={{ width: '90%', margin: '0 auto' }}>
                 <span>
                     <Link to="/">Back to Home</Link>
                 </span>
                 <h2>{repoDetail.name}</h2>
-                <ul>{list_template}</ul>
+                <ul className="repo_list">{list_template}</ul>
                 <input type="text" onChange={(e) => this.setState({ createList: e.target.value })} />
                 <button onClick={this.addList}>Add To List</button>
             </div>
@@ -60,7 +71,8 @@ const mapStateToProps = (props) => {
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
         addListToRepo: addListToRepo,
-        getRepoDetail: getRepoDetail
+        getRepoDetail: getRepoDetail,
+        changeRepoList: changeRepoList
     }, dispatch)
 }
 

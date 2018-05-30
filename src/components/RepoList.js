@@ -28,7 +28,7 @@ class RepoList extends Component {
             })
         }
         return (
-            <ul>{list_template}</ul>
+            <ul class="repos_list">{list_template}</ul>
         )
     }
 }
