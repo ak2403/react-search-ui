@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { addRepo, getRepo } from './actions';
 import RepoList from './RepoList';
 import RepoComponent from './RepoComponent';
+import NavBar from './basic/navbar';
 
 class Dashboard extends Component {
 
@@ -32,6 +33,7 @@ class Dashboard extends Component {
 
     return (
       <div>
+        <NavBar />
         <input type="text" onChange={(e) => this.setState({ inputValue: e.target.value })} />
         <button onClick={this.addListGroup}>Add</button>
         <BrowserRouter>

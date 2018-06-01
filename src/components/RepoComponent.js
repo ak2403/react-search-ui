@@ -4,6 +4,15 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { addListToRepo, getRepoDetail, changeRepoList } from './actions';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Checkbox from '@material-ui/core/Checkbox';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 class RepoComponent extends Component {
     constructor(props) {
@@ -169,18 +178,39 @@ class RepoComponent extends Component {
         if (repoDetail.lists) {
             let { editElem, editQuantity } = this.state;
             totalItems = repoDetail.lists.length;
-            list_template = repoDetail.lists.map((list, index) => {
-                list.checked && (checkedItems += 1);
-                (!list.quantity) && (list.quantity = 1);
-                return (<li key={index}>
-                    <input type="checkbox" checked={list.checked ? true : false} onChange={(event) => this.checkboxChange(event, list.title)} ref="check" />
-                    {editElem.original === list.title ? <input type="text" value={editElem.updated} onChange={(e) => this.onInputChange(e, 'title')} onKeyPress={(event) => this.onUpdate(event)} /> : <span>{list.title}</span>}
-                    <i className="fa fa-pencil" onClick={() => this.onEdit(list, 'title')} />
-                    {editQuantity.title === list.title ? <input type="text" value={editQuantity.updated} onChange={(e) => this.onInputChange(e, 'quantity')} onKeyPress={(event) => this.onUpdateQuantity(event)} /> : <span>Counts: {list.quantity}</span>}
-                    <i className="fa fa-pencil" onClick={() => this.onEdit(list, 'quantity')} />
-                    <span style={{ float: 'right' }}><i class="fa fa-times" onClick={() => this.onRemove(list)} /></span>
-                </li>)
-            })
+            list_template = <List>
+                {repoDetail.lists.map(value => (
+                    <ListItem
+                        key={value}
+                        role={undefined}
+                        dense
+                        button
+                    >
+                        <Checkbox
+                            checked={value.checked}
+                            tabIndex={-1}
+                            disableRipple
+                        />
+                        <ListItemText primary={value.title} />
+                        <ListItemSecondaryAction onClick={() => this.onRemove(value)}>
+                            <IconButton aria-label="Delete">
+                                <DeleteIcon />
+                            </IconButton>
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                ))}
+            </List>
+            // list_template = repoDetail.lists.map((list, index) => {
+            //     list.checked && (checkedItems += 1);
+            //     (!list.quantity) && (list.quantity = 1);
+            //     return (<li key={index}>
+            //         <input type="checkbox" checked={list.checked ? true : false} onChange={(event) => this.checkboxChange(event, list.title)} ref="check" />
+            //         {editElem.original === list.title ? <input type="text" value={editElem.updated} onChange={(e) => this.onInputChange(e, 'title')} onKeyPress={(event) => this.onUpdate(event)} /> : <span>{list.title}</span>}
+            //         <i className="fa fa-pencil" onClick={() => this.onEdit(list, 'title')} />
+            //         {editQuantity.title === list.title ? <input type="text" value={editQuantity.updated} onChange={(e) => this.onInputChange(e, 'quantity')} onKeyPress={(event) => this.onUpdateQuantity(event)} /> : <span>Counts: {list.quantity}</span>}
+            //         <i className="fa fa-pencil" onClick={() => this.onEdit(list, 'quantity')} />
+            //     </li>)
+            // })
         }
 
         const Styles = {
@@ -214,7 +244,7 @@ class RepoComponent extends Component {
                     <button onClick={this.addList} style={Styles.addListButton}>Add To List</button>
                 </div>
                 Status: {checkedItems} checked in {totalItems} items
-                {list_template.length != 0 ? <ul className="repo_list">{list_template}</ul> : 'No record found'}
+                {list_template.length != 0 ? <div>{list_template}</div> : 'No record found'}
             </div>
         )
     }
