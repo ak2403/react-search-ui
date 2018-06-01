@@ -143,11 +143,14 @@ class RepoComponent extends Component {
         if (repoDetail.lists.length === 0) {
             this.props.addListToRepo({
                 name: {
-                    title:this.state.createList,
+                    title: this.state.createList,
                     checked: false,
                     quantity: 1
                 },
                 repoName: repoDetail.name
+            });
+            this.setState({
+                createList: ''
             })
         }
     }
@@ -159,12 +162,15 @@ class RepoComponent extends Component {
     }
 
     render() {
-        let list_template = '';
+        let list_template = [];
+        let checkedItems = 0, totalItems = 0;
         const { repoDetail } = this.state;
 
         if (repoDetail.lists) {
             let { editElem, editQuantity } = this.state;
+            totalItems = repoDetail.lists.length;
             list_template = repoDetail.lists.map((list, index) => {
+                list.checked && (checkedItems += 1);
                 (!list.quantity) && (list.quantity = 1);
                 return (<li key={index}>
                     <input type="checkbox" checked={list.checked ? true : false} onChange={(event) => this.checkboxChange(event, list.title)} ref="check" />
@@ -183,7 +189,17 @@ class RepoComponent extends Component {
                 margin: '0 auto'
             },
             addListButton: {
-
+                height: '39px'
+            },
+            headerStyle: {
+                textAlign: 'center'
+            },
+            inputStyle: {
+                width: '80%',
+                border: '2px solid #e0e0e0',
+                height: '25px',
+                borderRadius: '5px 0 0 5px',
+                padding: '5px 10px'
             }
         }
 
@@ -192,10 +208,13 @@ class RepoComponent extends Component {
                 <span>
                     <Link to="/">Back to Home</Link>
                 </span>
-                <h2>{repoDetail.name}</h2>
-                <input type="text" onChange={(event) => this.onSearch(event)} />
-                <button onClick={this.addList} style={Styles.addListButton}>Add To List</button>
-                <ul className="repo_list">{list_template}</ul>
+                <h2 style={Styles.headerStyle}>{repoDetail.name} <i className="fa fa-pencil" /></h2>
+                <div style={{ width: '70%', margin: '0 auto', textAlign: 'center' }}>
+                    <input type="text" value={this.state.createList} onChange={(event) => this.onSearch(event)} style={Styles.inputStyle} />
+                    <button onClick={this.addList} style={Styles.addListButton}>Add To List</button>
+                </div>
+                Status: {checkedItems} checked in {totalItems} items
+                {list_template.length != 0 ? <ul className="repo_list">{list_template}</ul> : 'No record found'}
             </div>
         )
     }
