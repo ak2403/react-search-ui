@@ -9,10 +9,90 @@ class RepoComponent extends Component {
     constructor(props) {
         super();
         this.state = {
-            createList: ''
+            createList: '',
+            editElem: {
+                original: '',
+                updated: ''
+            },
+            editQuantity: {
+                original: '',
+                updated: ''
+            }
         };
         this.addList = this.addList.bind(this);
         this.checkboxChange = this.checkboxChange.bind(this);
+        this.onEdit = this.onEdit.bind(this);
+        this.onUpdate = this.onUpdate.bind(this);
+        this.onInputChange = this.onInputChange.bind(this);
+        this.onUpdateQuantity = this.onUpdateQuantity.bind(this);
+    }
+
+    onInputChange(event, type) {
+        if (type === 'title') {
+            let { editElem } = this.state;
+            editElem.updated = event.target.value;
+            this.setState({
+                editElem: editElem
+            })
+        } else {
+            let { editQuantity } = this.state;
+            editQuantity.updated = event.target.value;
+            this.setState({
+                editQuantity: editQuantity
+            })
+        }
+    }
+
+    onUpdate(event) {
+        if (event.key === 'Enter') {
+            let { repoDetail } = this.props;
+            _.filter(repoDetail.lists, list => {
+                if (list.title === this.state.editElem.original)
+                    list.title = this.state.editElem.updated
+            })
+            this.setState({
+                editElem: {
+                    original: '',
+                    updated: ''
+                }
+            })
+            this.props.changeRepoList(repoDetail);
+        }
+    }
+
+    onUpdateQuantity(event) {
+        if (event.key === 'Enter') {
+            let { repoDetail } = this.props;
+            _.filter(repoDetail.lists, list => {
+                if (list.title === this.state.editQuantity.title)
+                    list.quantity = this.state.editQuantity.updated
+            })
+            this.setState({
+                editQuantity: {
+                    title: '',
+                    updated: ''
+                }
+            })
+            this.props.changeRepoList(repoDetail);
+        }
+    }
+
+    onEdit(list, type) {
+        if (type === 'title') {
+            this.setState({
+                editElem: {
+                    original: list.title,
+                    updated: list.title
+                }
+            })
+        } else {
+            this.setState({
+                editQuantity: {
+                    title: list.title,
+                    updated: list.quantity
+                }
+            })
+        }
     }
 
     checkboxChange(event, title) {
@@ -43,8 +123,17 @@ class RepoComponent extends Component {
         const { repoDetail } = this.props;
 
         if (repoDetail.lists) {
+            let { editElem, editQuantity } = this.state;
             list_template = repoDetail.lists.map((list, index) => {
-                return <li key={index}><input type="checkbox" checked={list.checked ? true : false} onChange={(event) => this.checkboxChange(event, list.title)} ref="check" />{list.title} <span style={{ float: 'right' }}>Edit Remove</span></li>
+                (!list.quantity) && (list.quantity = 1);
+                return (<li key={index}>
+                    <input type="checkbox" checked={list.checked ? true : false} onChange={(event) => this.checkboxChange(event, list.title)} ref="check" />
+                    {editElem.original === list.title ? <input type="text" value={editElem.updated} onChange={(e) => this.onInputChange(e, 'quantity')} onKeyPress={(event) => this.onUpdate(event)} /> : <span>{list.title}</span>}
+                    <i className="fa fa-pencil" onClick={() => this.onEdit(list, 'title')} />
+                    {editQuantity.title === list.title ? <input type="text" value={editQuantity.updated} onChange={(e) => this.onInputChange(e, 'quantity')} onKeyPress={(event) => this.onUpdateQuantity(event)} /> : <span>Counts: {list.quantity}</span>}
+                    <i className="fa fa-pencil" onClick={() => this.onEdit(list, 'quantity')} />
+                    <span style={{ float: 'right' }}> Remove</span>
+                </li>)
             })
         }
 
