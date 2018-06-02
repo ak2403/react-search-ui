@@ -3,7 +3,7 @@ import _ from 'underscore';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { addListToRepo, getRepoDetail, changeRepoList } from './actions';
+import { addListToRepo, getRepoDetail, changeRepoList, changeRepoName } from './actions';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -13,6 +13,11 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
+import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
+import AddIcon from '@material-ui/icons/Add';
+import Button from '@material-ui/core/Button';
+import Input from '@material-ui/core/Input';
 
 class RepoComponent extends Component {
     constructor(props) {
@@ -27,7 +32,8 @@ class RepoComponent extends Component {
                 original: '',
                 updated: ''
             },
-            repoDetail: ''
+            repoDetail: '',
+            editTitle: false
         };
         this.addList = this.addList.bind(this);
         this.checkboxChange = this.checkboxChange.bind(this);
@@ -37,6 +43,22 @@ class RepoComponent extends Component {
         this.onUpdateQuantity = this.onUpdateQuantity.bind(this);
         this.onRemove = this.onRemove.bind(this);
         this.onSearch = this.onSearch.bind(this);
+        this.changeHeader = this.changeHeader.bind(this);
+        this.changeTitle = this.changeTitle.bind(this);
+    }
+
+    changeTitle(event) {
+        if (event.which == 13) {
+            let { repoDetail } = this.state;
+            repoDetail.rename = event.target.value;
+            this.props.changeRepoName(repoDetail);
+        }
+    }
+
+    changeHeader(e) {
+        this.setState({
+            editTitle: true
+        })
     }
 
     componentWillReceiveProps(prev, next) {
@@ -166,7 +188,7 @@ class RepoComponent extends Component {
 
     componentWillMount() {
         this.props.getRepoDetail({
-            name: this.props.match.params.id
+            _id: this.props.match.params.id
         })
     }
 
@@ -179,38 +201,39 @@ class RepoComponent extends Component {
             let { editElem, editQuantity } = this.state;
             totalItems = repoDetail.lists.length;
             list_template = <List>
-                {repoDetail.lists.map(value => (
-                    <ListItem
-                        key={value}
-                        role={undefined}
-                        dense
-                        button
-                    >
-                        <Checkbox
-                            checked={value.checked}
-                            tabIndex={-1}
-                            disableRipple
-                        />
-                        <ListItemText primary={value.title} />
-                        <ListItemSecondaryAction onClick={() => this.onRemove(value)}>
-                            <IconButton aria-label="Delete">
-                                <DeleteIcon />
-                            </IconButton>
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                ))}
+                {repoDetail.lists.map(value => {
+                    value.checked && (checkedItems += 1);
+                    (!value.quantity) && (value.quantity = 1);
+                    return (
+                        <ListItem
+                            key={value.title}
+                            role={undefined}
+                            dense
+                            button
+                        >
+                            <Checkbox
+                                checked={value.checked}
+                                tabIndex={-1}
+                                disableRipple
+                                onChange={(event) => this.checkboxChange(event, value.title)}
+                            />
+                            <ListItemText primary={value.title} />
+                            <ListItemSecondaryAction onClick={() => this.onRemove(value)}>
+                                <IconButton aria-label="Delete">
+                                    <DeleteIcon />
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    )
+                }
+                )}
             </List>
-            // list_template = repoDetail.lists.map((list, index) => {
-            //     list.checked && (checkedItems += 1);
-            //     (!list.quantity) && (list.quantity = 1);
             //     return (<li key={index}>
-            //         <input type="checkbox" checked={list.checked ? true : false} onChange={(event) => this.checkboxChange(event, list.title)} ref="check" />
             //         {editElem.original === list.title ? <input type="text" value={editElem.updated} onChange={(e) => this.onInputChange(e, 'title')} onKeyPress={(event) => this.onUpdate(event)} /> : <span>{list.title}</span>}
             //         <i className="fa fa-pencil" onClick={() => this.onEdit(list, 'title')} />
             //         {editQuantity.title === list.title ? <input type="text" value={editQuantity.updated} onChange={(e) => this.onInputChange(e, 'quantity')} onKeyPress={(event) => this.onUpdateQuantity(event)} /> : <span>Counts: {list.quantity}</span>}
             //         <i className="fa fa-pencil" onClick={() => this.onEdit(list, 'quantity')} />
             //     </li>)
-            // })
         }
 
         const Styles = {
@@ -238,10 +261,30 @@ class RepoComponent extends Component {
                 <span>
                     <Link to="/">Back to Home</Link>
                 </span>
-                <h2 style={Styles.headerStyle}>{repoDetail.name} <i className="fa fa-pencil" /></h2>
+                <h2 style={Styles.headerStyle}>
+                    {this.state.editTitle ?
+                        <Input
+                            defaultValue={repoDetail.name}
+                            onKeyDown={(event) => this.changeTitle(event)}
+                            inputProps={{
+                                'aria-label': 'Description',
+                            }}
+                        />
+                        : <span onDoubleClick={this.changeHeader}>{repoDetail.name}</span>}
+                </h2>
                 <div style={{ width: '70%', margin: '0 auto', textAlign: 'center' }}>
-                    <input type="text" value={this.state.createList} onChange={(event) => this.onSearch(event)} style={Styles.inputStyle} />
-                    <button onClick={this.addList} style={Styles.addListButton}>Add To List</button>
+                    <form noValidate autoComplete="off">
+                        <TextField
+                            id="search"
+                            label="search and add items"
+                            value={this.state.createList}
+                            onChange={(event) => this.onSearch(event)}
+                            margin="normal"
+                        />
+                        <Button variant="fab" color="primary" aria-label="add" onClick={this.addList} style={{ height: '20px', width: '35px' }}>
+                            <AddIcon />
+                        </Button>
+                    </form>
                 </div>
                 Status: {checkedItems} checked in {totalItems} items
                 {list_template.length != 0 ? <div>{list_template}</div> : 'No record found'}
@@ -260,7 +303,8 @@ const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
         addListToRepo: addListToRepo,
         getRepoDetail: getRepoDetail,
-        changeRepoList: changeRepoList
+        changeRepoList: changeRepoList,
+        changeRepoName: changeRepoName
     }, dispatch)
 }
 

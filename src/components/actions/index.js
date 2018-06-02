@@ -54,3 +54,14 @@ export const changeRepoList = (data) => {
         });
     }
 }
+
+export const changeRepoName = (data) => {
+    return (dispatch) => {
+        axios.post('/repo/changeRepoName', data).then(res => {
+            dispatch({
+                type: 'addedListToRepo',
+                payload: res.data
+            });
+        });
+    }
+}
