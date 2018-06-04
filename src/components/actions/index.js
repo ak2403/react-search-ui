@@ -65,3 +65,14 @@ export const changeRepoName = (data) => {
         });
     }
 }
+
+export const deleteRepo = (data) => {
+    return (dispatch) => {
+        axios.post('/repo/deleteRepo', data).then(res => {
+            dispatch({
+                type: 'getRepo',
+                payload: res.data
+            });
+        });
+    }
+}
