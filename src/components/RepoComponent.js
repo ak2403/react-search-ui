@@ -18,6 +18,7 @@ import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 class RepoComponent extends Component {
     constructor(props) {
@@ -45,6 +46,30 @@ class RepoComponent extends Component {
         this.onSearch = this.onSearch.bind(this);
         this.changeHeader = this.changeHeader.bind(this);
         this.changeTitle = this.changeTitle.bind(this);
+        this.reduceQuantity = this.reduceQuantity.bind(this);
+        this.addQuantity = this.addQuantity.bind(this);
+    }
+
+    reduceQuantity(list) {
+        let { lists } = this.props.repoDetail;
+        _.find(lists, (repo) => {
+            if (repo.title === list.title) {
+                (repo.quantity > 0) && (repo.quantity -= 1);
+                return true;
+            }
+        })
+        this.props.changeRepoList(this.props.repoDetail);
+    }
+
+    addQuantity(list) {
+        let { lists } = this.props.repoDetail;
+        _.find(lists, (repo) => {
+            if (repo.title === list.title) {
+                repo.quantity += 1;
+                return true;
+            }
+        })
+        this.props.changeRepoList(this.props.repoDetail);
     }
 
     changeTitle(event) {
@@ -73,7 +98,7 @@ class RepoComponent extends Component {
         let { repoDetail } = this.props;
         let repoObject = JSON.parse(JSON.stringify(repoDetail));
         let searchList = _.filter(repoObject.lists, list => {
-            if (list.title.toLowerCase().indexOf(event.target.value) != -1)
+            if (list.title.toLowerCase().indexOf(event.target.value.toLowerCase()) != -1)
                 return list;
         });
         repoObject.lists = searchList;
@@ -218,8 +243,16 @@ class RepoComponent extends Component {
                                 onChange={(event) => this.checkboxChange(event, value.title)}
                             />
                             <ListItemText primary={value.title} />
-                            <ListItemSecondaryAction onClick={() => this.onRemove(value)}>
-                                <IconButton aria-label="Delete">
+                            <ListItemSecondaryAction>
+                                <IconButton onClick={() => this.reduceQuantity(value)}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z" /></svg>
+                                </IconButton>
+                                {value.quantity}
+                                <IconButton onClick={() => this.addQuantity(value)}>
+                                    <AddIcon />
+                                </IconButton>
+
+                                <IconButton aria-label="Delete" onClick={() => this.onRemove(value)}>
                                     <DeleteIcon />
                                 </IconButton>
                             </ListItemSecondaryAction>
@@ -261,33 +294,39 @@ class RepoComponent extends Component {
                 <span>
                     <Link to="/">Back to Home</Link>
                 </span>
-                <h2 style={Styles.headerStyle}>
-                    {this.state.editTitle ?
-                        <Input
-                            defaultValue={repoDetail.name}
-                            onKeyDown={(event) => this.changeTitle(event)}
-                            inputProps={{
-                                'aria-label': 'Description',
-                            }}
-                        />
-                        : <span onDoubleClick={this.changeHeader}>{repoDetail.name}</span>}
-                </h2>
-                <div style={{ width: '70%', margin: '0 auto', textAlign: 'center' }}>
-                    <form noValidate autoComplete="off">
-                        <TextField
-                            id="search"
-                            label="search and add items"
-                            value={this.state.createList}
-                            onChange={(event) => this.onSearch(event)}
-                            margin="normal"
-                        />
-                        <Button variant="fab" color="primary" aria-label="add" onClick={this.addList} style={{ height: '20px', width: '35px' }}>
-                            <AddIcon />
-                        </Button>
-                    </form>
-                </div>
-                Status: {checkedItems} checked in {totalItems} items
+                {repoDetail ? <div>
+                    <h2 style={Styles.headerStyle}>
+                        {this.state.editTitle ?
+                            <Input
+                                defaultValue={repoDetail.name}
+                                onKeyDown={(event) => this.changeTitle(event)}
+                                inputProps={{
+                                    'aria-label': 'Description',
+                                }}
+                            />
+                            : <span onDoubleClick={this.changeHeader}>{repoDetail.name}</span>}
+                    </h2>
+                    <div style={{ width: '70%', margin: '0 auto', textAlign: 'center' }}>
+                        <form noValidate autoComplete="off">
+                            <TextField
+                                id="search"
+                                label="search and add items"
+                                value={this.state.createList}
+                                onChange={(event) => this.onSearch(event)}
+                                margin="normal"
+                            />
+                            <Button variant="fab" color="primary" aria-label="add" onClick={this.addList} style={{ height: '20px', width: '35px' }}>
+                                <AddIcon />
+                            </Button>
+                        </form>
+                    </div>
+                    Status: {checkedItems} checked in {totalItems} items
                 {list_template.length != 0 ? <div>{list_template}</div> : 'No record found'}
+                </div> :
+                    <div style={{ width: '100%' }}>
+                        <CircularProgress />
+                    </div>
+                }
             </div>
         )
     }
